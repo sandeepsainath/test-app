@@ -29,6 +29,9 @@ class User(db.Model):
 @app.route('/', methods=['GET'])
 def index():
     if request.method == 'GET':
+        forecasts_df = pd.read_csv('tomorrows_forecast.csv')
+        unique_states = list(sorted(forecasts_df['state_name'].unique()))
+        unique_counties = list(sorted(forecasts_df['county_name'].unique()))
         return render_template("base.html", 
                                 message="Welcome to our app! \n Please register for daily weather/safety updates over email.",
                                 states=unique_states,
@@ -47,6 +50,9 @@ def register():
                         q3=request.form['q3'],))
     db.session.commit()
     #return render_template('register.html', message="You have successfully registered!")
+    forecasts_df = pd.read_csv('tomorrows_forecast.csv')
+    unique_states = list(sorted(forecasts_df['state_name'].unique()))
+    unique_counties = list(sorted(forecasts_df['county_name'].unique()))
     return render_template("base.html", 
                             message="You have successfully registered!",
                             states=unique_states,
@@ -56,9 +62,6 @@ def register():
 if __name__ == '__main__':
     app.secret_key = "ThisIsNotASecret:p"
     db.create_all()
-    forecasts_df = pd.read_csv('tomorrows_forecast.csv')
-    unique_states = list(sorted(forecasts_df['state_name'].unique()))
-    unique_counties = list(sorted(forecasts_df['county_name'].unique()))
     # Alternate idea: group by state and county to get unique state-county combinations, and display those as 
     # options in the dropdown
     app.run()
